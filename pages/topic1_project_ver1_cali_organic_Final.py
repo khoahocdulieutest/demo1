@@ -261,7 +261,7 @@ df.head()
 
 
 # Whether "Season" affect AveragePrice ?
-
+st.markdown('# Whether "Season" affect AveragePrice ?')
 # In[27]:
 
 
@@ -270,26 +270,29 @@ fig, ax = plt.subplots(figsize=(20,6))
 sns.boxplot(data = df[df['type']=='conventional'],
            x="Season", y="AveragePrice", ax=ax)
 plt.xticks(rotation=90)
-plt.show()
+st.pyplot(fig)
 
 
 # In[28]:
 
 
 #type = Organic
+st.markdown('Organic')
 fig, ax = plt.subplots(figsize=(10,6))
 sns.boxplot(data = df[df['type']=='organic'],
            x="Season", y="AveragePrice", ax=ax)
 plt.xticks(rotation=90)
-plt.show()
+#plt.show()
+st.pyplot(fig)
 
 
 # Yes, AveragePrice was affected by "Season" (both in 'Organic' type and "conventional" type)
-
+st.markdown('### Yes, AveragePrice was affected by "Season" (both in $Organic$ type and $conventional$ type)')
 # In[29]:
 
 
 # Label Encoder and OnehotEncoder for 'type' and 'region'
+st.markdown("### Label Encoder and OnehotEncoder for $type$ and $region$")
 le = LabelEncoder()
 df['type_new'] = le.fit_transform(df['type'])
 
@@ -297,7 +300,7 @@ df['type_new'] = le.fit_transform(df['type'])
 # In[30]:
 
 
-df.head()
+st.write(df.head())
 
 
 # In[31]:
@@ -310,7 +313,7 @@ df_ohe.head()
 # In[32]:
 
 
-df_ohe.columns
+st.write(df_ohe.columns)
 
 
 # In[33]:
@@ -328,7 +331,7 @@ X.head()
 
 
 # Buoc 4&5: Modeling & Evaluation/Analyze & Report
-
+st.write("## Buoc 4&5: Modeling & Evaluation/Analyze & Report")
 # In[35]:
 
 
@@ -339,7 +342,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 
 # Have many range values => Scaler (and large samples ~ 18k) => StandardScaler
-
+st.write('### Have many range values => Scaler (and large samples ~ 18k) => StandardScaler')
 
 # In[37]:
 
@@ -354,7 +357,7 @@ r2_score(y_test, y_pred_LR)
 
 
 mae_LR = mean_absolute_error(y_test, y_pred_LR)
-mae_LR
+st.write(f"mae_LR= {mae_LR}")
 
 
 # In[39]:
@@ -390,16 +393,16 @@ mae_XGB
 
 
 # Select RandomForestRegressor bc it has highest r^2 and lowest MAE
-
+st.write("### Select RandomForestRegressor bc it has highest $r^2$ and lowest $MAE$")
 # In[43]:
 
 
-pd.DataFrame(pipe_RF['rf'].feature_importances_,
+df43 = pd.DataFrame(pipe_RF['rf'].feature_importances_,
             index=X_train.columns,
             columns=['feature_importances']).sort_values(by=['feature_importances'],
                                                        ascending=False)
 
-
+st.write(df43)
 # In[44]:
 
 
@@ -494,33 +497,36 @@ df_ts1 = df_ts1.drop(['ds'], axis=1)
 # In[57]:
 
 
-plt.figure(figsize=(15,8))
+fig = plt.figure(figsize=(15,8))
 plt.plot(df_ts1)
 plt.title("Avocados' AveragePrice in California")
-plt.show()
-
+#plt.show()
+st.pyplot(fig)
 
 # In[58]:
 
 
 decompose_result = seasonal_decompose(df_ts1, model='Mmultiplicative')
-decompose_result
+st.write('decompose_result')
+st.write(decompose_result)
 
 
 # In[59]:
 
 
-plt.figure(figsize=(15,4))
+fig = plt.figure(figsize=(15,4))
 decompose_result.plot()
-plt.show()
+#plt.show()
+st.pyplot(fig)
 
 
 # In[60]:
 
 
-plt.figure(figsize=(15,4))
+fig = plt.figure(figsize=(15,4))
 plt.plot(decompose_result.trend)
-plt.show()
+#plt.show()
+st.pyplot(fig)
 
 
 # In[61]:
@@ -541,8 +547,8 @@ plt.show()
 
 # With the above result, we can clearly see the seasonal component of the data, and also see that trenf is nonlinear. Residual ranges from 0.85 => 1.15
 
-# Cuoc 4&5: Modeling & Evaluation/Analyze and Report
-
+# Buoc 4&5: Modeling & Evaluation/Analyze and Report
+st.write('### Buoc 4&5: Modeling & Evaluation/Analyze and Report')
 # Arima
 
 # In[63]:
