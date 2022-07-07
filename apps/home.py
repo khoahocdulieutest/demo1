@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 #from data.create_data import create_table
 
-def app():
+def app(state):
     st.title('Home')
 
     st.write("THỐNG KÊ DỮ LIỆU PHÂN TÍCH")

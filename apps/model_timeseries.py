@@ -36,383 +36,14 @@ from fbprophet.plot import add_changepoints_to_plot
 DATA_FILE = None
 
 def app(state):
-    # In[2]:
-    #st.set_page_config(page_title="Topic 1", page_icon="📈")
-
-    st.markdown("# Topic 1")
-    st.sidebar.header("Topic 1")
-
-
-    data =pd.read_csv("avocado.csv")
-
-
-    # In[3]:
-
-
-    data.info()
-
-
-    # In[4]:
-
-
-    data.head()
-
-
-    # In[5]:
-
-
-    data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
-
-
-    # In[6]:
-
-
-    data.head(2)
-
-
-    # Request 1: Organic Avocados' Price Prediction
-    # Lineear Regression, Random Forest, XGB Regressor...- Regression Algorithm
-
-    # Buoc 3: Data preparation
-
-    # In[7]:
-
-
-    df = data.copy(deep=True)
-
-
-    # First EDA =>Check data
-
-    # In[8]:
-
-
-    pp.ProfileReport(df)
-
-
-    # From Pandas Profilling Report we see that:
-    #     + No missing cells
-    #     + No duplicate rows
-
-    # In[9]:
-
-
-    # we can check again
-    df.isnull().any()
-
-
-    # In[10]:
-
-
-    df.isna().any()
-
-
-    # In[11]:
-
-
-    df.duplicated().any()
-
-
-    # In[12]:
-
-
-    df.shape
-
-
-    # Wheter the Categorical Features('type'/'region') affected the 'AveragePrice'?
-
-    # Whheter the Categorical Features('type') affected the 'AveragePrice'?
-
-    # In[13]:
-
-
-    #AveragePrice Distribution/ Boxplot of 2 types of Avocados
-    fig, ax = plt.subplots(figsize=(10,5))
-    sns.displot(df, x="AveragePrice",hue="type", stat="density")
-    #plt.show()
-    st.pyplot(fig)
-
-    # In[14]:
-
-    fig, ax = plt.subplots(figsize=(10,5))
-    sns.displot(df, x="AveragePrice",hue="type", stat="probability")
-    #plt.show()
-    st.pyplot(fig)
-
-
-    # In[15]:
-
-    fig, ax = plt.subplots(figsize=(10,5))
-    sns.displot(df, x="AveragePrice",hue="type", multiple="dodge")
-    #plt.show()
-    st.pyplot(fig)
-
-    # In[16]:
-
-    fig, ax = plt.subplots(figsize=(10,5))
-    sns.boxplot(data=df, x="type", y="AveragePrice")
-    #plt.show()
-    st.pyplot(fig)
-
-
-    # Organic Avocado is more expansive than conventional avocado.
-    # "AveragePrice" was affected by "type"
-
-    # Whether the "region" affected 'AveragePrice' ?
-
-    # In[17]:
-
-
-    # type == "organic"
-    fig, ax = plt.subplots(figsize=(20,8))
-    sns.boxplot(data = df[df['type']=='organic'],
-               x="region", y="AveragePrice", ax=ax)
-    plt.xticks(rotation=90)
-    #plt.show()
-    st.pyplot(fig)
-
-
-    # Some region have high price
-    # Some region have low price
-
-    # In[18]:
-
-
-    # type == 'conventional'
-    fig, ax = plt.subplots(figsize=(20,8))
-    sns.boxplot(data = df[df['type']=='conventional'],
-               x="region", y="AveragePrice", ax=ax)
-    plt.xticks(rotation=90)
-    #plt.show()
-    st.pyplot(fig)
-
-
-    # Some region have high price
-    # Some region have low price
-
-    # Whether the Continuous Features affected the "AveragePrice"
-
-    # In[19]:
-
-
-    #Correlation
-    corr = df.corr()
-    corr
-
-
-    # In[20]:
-
-
-    fig, ax = plt.subplots(figsize=(20,20))
-    sns.heatmap(corr, vmin=-1, vmax=1, annot=True)
-    #plt.show()
-    st.pyplot(fig)
-
-
-    # Corr between AveragePrice with other factor is very low
-    # other factor don't affect to AveragePrice
-
-    # Feature Engineering
-    # + About Date, we can now the season in USA from https://seasonsyear.com/USA
-    #     + US'Spring  months are March, April and May (3,4,5)
-    #     + US'summer  months are june, July and August (6,7,8)
-    #     + US'autumn  months are Sep, Oct and Nov (9,10,11)
-    #     + US'winter  months are Dec, jan and Feb (12,1,2)
-
-    # In[21]:
-
-
-    def convert_moth(month):
-        if month == 3 or month == 4 or month == 5:
-            return 0
-        elif month == 6 or month == 7 or month == 8:
-            return 1
-        if month == 9 or month == 10 or month == 11:
-            return 2
-        else:
-            return 3
-
-
-    # In[22]:
-
-
-    df['Date'] = pd.to_datetime(df["Date"])
-
-
-    # In[23]:
-
-
-    df['Month'] = pd.DatetimeIndex(df["Date"]).month
-
-
-    # In[24]:
-
-
-    df['Season'] = df["Month"].apply(lambda x: convert_moth(x))
-
-
-    # In[25]:
-
-
-    df.info()
-
-
-    # In[26]:
-
-
-    df.head()
-
-
-    # Whether "Season" affect AveragePrice ?
-    st.markdown('# Whether "Season" affect AveragePrice ?')
-    # In[27]:
-
-
-    #type = conventional
-    fig, ax = plt.subplots(figsize=(20,6))
-    sns.boxplot(data = df[df['type']=='conventional'],
-               x="Season", y="AveragePrice", ax=ax)
-    plt.xticks(rotation=90)
-    st.pyplot(fig)
-
-
-    # In[28]:
-
-
-    #type = Organic
-    st.markdown('Organic')
-    fig, ax = plt.subplots(figsize=(10,6))
-    sns.boxplot(data = df[df['type']=='organic'],
-               x="Season", y="AveragePrice", ax=ax)
-    plt.xticks(rotation=90)
-    #plt.show()
-    st.pyplot(fig)
-
-
-    # Yes, AveragePrice was affected by "Season" (both in 'Organic' type and "conventional" type)
-    st.markdown('### Yes, AveragePrice was affected by "Season" (both in $Organic$ type and $conventional$ type)')
-    # In[29]:
-
-
-    # Label Encoder and OnehotEncoder for 'type' and 'region'
-    st.markdown("### Label Encoder and OnehotEncoder for $type$ and $region$")
-    le = LabelEncoder()
-    df['type_new'] = le.fit_transform(df['type'])
-
-
-    # In[30]:
-
-
-    st.write(df.head())
-
-
-    # In[31]:
-
-
-    df_ohe = pd.get_dummies(data=df, columns=["region"])
-    df_ohe.head()
-
-
-    # In[32]:
-
-
-    st.write(df_ohe.columns)
-
-
-    # In[33]:
-
-
-    # Choose TotalVolumebc it has high corr with '4046', '4225', '4770', 'Small Bags', 'Large Bags', 'XLarge Bags'
-    X = df_ohe.drop(['Date', "AveragePrice",'type', '4046', '4225', '4770', 'Small Bags', 'Large Bags', 'XLarge Bags'], axis=1)
-    y = df['AveragePrice']
-
-
-    # In[34]:
-
-
-    X.head()
-
-
-    # Buoc 4&5: Modeling & Evaluation/Analyze & Report
-    st.write("## Buoc 4&5: Modeling & Evaluation/Analyze & Report")
-    # In[35]:
-
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
-
-
-    # In[36]:
-
-
-    # Have many range values => Scaler (and large samples ~ 18k) => StandardScaler
-    st.write('### Have many range values => Scaler (and large samples ~ 18k) => StandardScaler')
-
-    # In[37]:
-
-
-    pipe_LR = Pipeline([('scaler', StandardScaler()), ('lr', LinearRegression())])
-    pipe_LR.fit(X_train, y_train)
-    y_pred_LR = pipe_LR.predict(X_test)
-    r2_score(y_test, y_pred_LR)
-
-
-    # In[38]:
-
-
-    mae_LR = mean_absolute_error(y_test, y_pred_LR)
-    st.write(f"mae_LR= {mae_LR}")
-
-
-    # In[39]:
-
-
-    pipe_RF = Pipeline([('scaler', StandardScaler()), ('rf', RandomForestRegressor())])
-    pipe_RF.fit(X_train, y_train)
-    y_pred_RF = pipe_LR.predict(X_test)
-    r2_score(y_test, y_pred_LR)
-
-
-    # In[40]:
-
-
-    mae_RF = mean_absolute_error(y_test, y_pred_RF)
-    mae_RF
-
-
-    # In[41]:
-
-
-    pipe_XGB = Pipeline([('scaler', StandardScaler()), ('xgb', XGBRegressor())])
-    pipe_XGB.fit(X_train, y_train)
-    y_pred_XGB = pipe_XGB.predict(X_test)
-    r2_score(y_test, y_pred_XGB)
-
-
-    # In[42]:
-
-
-    mae_XGB = mean_absolute_error(y_test, y_pred_XGB)
-    mae_XGB
-
-
-    # Select RandomForestRegressor bc it has highest r^2 and lowest MAE
-    st.write("### Select RandomForestRegressor bc it has highest $r^2$ and lowest $MAE$")
-    # In[43]:
-
-
-    df43 = pd.DataFrame(pipe_RF['rf'].feature_importances_,
-                index=X_train.columns,
-                columns=['feature_importances']).sort_values(by=['feature_importances'],
-                                                           ascending=False)
-
-    st.write(df43)
-    # In[44]:
-
-
-    pd.DataFrame(pipe_RF['rf'].feature_importances_,              index=X_train.columns,              columns=['feature_importances']).sort_values(by=['feature_importances'],                                                            ascending=False)
-
+    st.markdown("# Predict by Time Series")
+    st.sidebar.header("Predict by Time Series")
+
+    df = st.session_state['df_OnehotEncoder']
+    data = st.session_state['data']
 
     # Request 2: Organic Avocado Average Price Prediction for the future in California ARIMA & PROPHET - Time Series Algorrithm (0.5)
-
+    st.write('## Request 2: Organic Avocado Average Price Prediction for the future in California ARIMA & PROPHET - Time Series Algorrithm (0.5)')
     # In[45]:
 
 
@@ -433,7 +64,7 @@ def app(state):
 
     agg = {'AveragePrice': 'mean'}
     df_ca_gr = df_ca.groupby(df_ca['Date']).aggregate(agg).reset_index()
-    df_ca_gr.head()
+    st.write(df_ca_gr.head())
 
 
     # In[48]:
@@ -442,7 +73,7 @@ def app(state):
     df_ts = pd.DataFrame()
     df_ts['ds'] = pd.to_datetime(df_ca_gr['Date'])
     df_ts['y'] = df_ca_gr['AveragePrice']
-    df_ts.head()
+    st.write(df_ts.head())
 
 
     # In[49]:
@@ -461,7 +92,8 @@ def app(state):
 
 
     # Mean of Organic Avocado AveragePrice in California
-    df_ts['y'].mean()
+    st.markdown('### Mean of Organic Avocado AveragePrice in California')
+    st.write(f"df_ts['y'].mean()={df_ts['y'].mean()}")
 
 
     # Use df_ts1 for ARIMA, df_ts for Prophet
@@ -534,21 +166,23 @@ def app(state):
     # In[61]:
 
 
-    plt.figure(figsize=(15,4))
+    fig = plt.figure(figsize=(15,4))
     plt.plot(decompose_result.seasonal)
-    plt.show()
+    # plt.show()
+    st.pyplot(fig)
 
 
     # In[62]:
 
 
-    plt.figure(figsize=(15,4))
+    fig = plt.figure(figsize=(15,4))
     plt.plot(decompose_result.resid)
-    plt.show()
+    # plt.show()
+    st.pyplot(fig)
 
 
     # With the above result, we can clearly see the seasonal component of the data, and also see that trenf is nonlinear. Residual ranges from 0.85 => 1.15
-
+    st.markdown('#### With the above result, we can clearly see the seasonal component of the data, and also see that trenf is nonlinear. Residual ranges from 0.85 => 1.15')
     # Buoc 4&5: Modeling & Evaluation/Analyze and Report
     st.write('### Buoc 4&5: Modeling & Evaluation/Analyze and Report')
     # Arima
@@ -568,7 +202,7 @@ def app(state):
     # In[64]:
 
 
-    print(stepwise_model.aic())
+    st.write(f'AIC={stepwise_model.aic()}')
 
 
     # In[65]:
@@ -606,7 +240,7 @@ def app(state):
     # In[70]:
 
 
-    future_forecast
+    st.markdown(f'future_forecast = {future_forecast}')
 
 
     # In[71]:

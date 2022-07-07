@@ -1,6 +1,7 @@
 """Frameworks for running multiple Streamlit applications as a single app.
 """
 import streamlit as st
+import pandas as pd
 
 class MultiApp:
     """Framework for combining multiple streamlit applications.
@@ -21,8 +22,9 @@ class MultiApp:
         app.add_app("Bar", bar.app)
         app.run()
     """
-    def __init__(self):
+    def __init__(self, state):
         self.apps = []
+        self.state = state
 
     def add_app(self, title, func):
         """Adds a new application.
@@ -44,4 +46,24 @@ class MultiApp:
             self.apps,
             format_func=lambda app: app['title'])
 
-        app['function']()
+
+
+        data_file = st.sidebar.file_uploader("Upload CSV",type=["csv"])
+        if data_file is not None:
+            file_details = {"filename": data_file.name, "filetype": data_file.type,
+                            "filesize": data_file.size}
+
+            st.write(file_details)
+            df = pd.read_csv(data_file)
+            #st.dataframe(df)
+            #self.state['data'] = data_file.name
+            st.write(data_file.name)
+            st.session_state['data'] = df
+
+        option_model = st.sidebar.selectbox(
+            'Choose the model?',
+            ('LinearRegression', 'RandomForestRegressor', 'XGBRegressor'))
+
+        st.write('You selected:', option_model)
+
+        app['function'](self.state)
