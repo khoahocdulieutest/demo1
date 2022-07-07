@@ -1,4 +1,5 @@
 streamlit~=1.10.0
+Cython~=0.29.30
 pandas~=1.4.3
 numpy~=1.23.0
 seaborn~=0.11.2
@@ -11,4 +12,5 @@ pandas-profiling~=3.2.0
 pystan~=2.19.1.1
 matplotlib~=3.5.2
 statsmodels~=0.13.2
+plotly~=5.9.0
 fbprophet~=0.7.1
